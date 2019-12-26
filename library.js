@@ -59,22 +59,24 @@ function libinit() {
 
 var musicVolume = 128 / 2, musicGain;
 var audioContext, rate, samps, time;
+var audioStarting;
 function audioInit() {
   if (audioContext)
     audioContext.close();
   musicGain = null;
   audioContext = new AudioContext();
-  if (audioContext.state == 'suspended') {
-    audioContext.close();
-    audioContext = null;
-    return;
-  }
   rate = 48000; //audioContext.sampleRate;
   samps = 48000 >> 3;
   time = 0;
+  freeSources = [];
+  audioStarting = true;
+  if (audioContext.state == 'suspended') {
+    fixAudio();
+    return;
+  }
   //playerweb._playerweb_init(rate);
   console.log('playerweb init done');
-  freeSources = [];
+  musicVolumeSet(musicVolume);
 }
 
 function fillBuf(myBuffer) {
@@ -104,9 +106,11 @@ let freeBufs = [];
 let bufCount = 0;
 function nextBuf() {
   if (!audioContext)
-  	audioInit();
-  if (!musicGain)
-  	return;
+    audioInit();
+  if (!musicGain) {
+    audioStarting && musicVolumeSet(musicVolume);
+    return;
+  }
   let myBuffer = freeBufs.length ? freeBufs.pop() : audioContext.createBuffer(2, samps, rate);
   fillBuf(myBuffer);
   let src = audioContext.createBufferSource();
@@ -214,8 +218,9 @@ function musicVolumeSet(n) {
 		musicGain = null;
 	} else {
 		if (!musicGain) {
-			if (!audioContext)
+			if (!audioContext || audioContext.state == 'suspended')
 				return;
+			audioStarting = false;
 			musicGain = audioContext.createGain();
 			musicGain.gain.value = vol;
 			musicGain.connect(audioContext.destination);

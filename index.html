@@ -137,7 +137,7 @@ html{display:flex;height:100%}
 body{margin:0;display:flex;flex:1 1 0;background:#000}
 </style>
 <div id="outer" style="flex:1 1 0;display:flex;justify-content: center;align-items:center"
-><canvas id="canvas" width="320" height="200" style="x-display:block;x-flex:1 1 0;x-transition:opacity .5s;x-opacity:0;x-object-fit:contain;image-rendering: pixelated;"></canvas>
+><canvas id="canvas" width="320" height="200" style="x-display:block;x-flex:1 1 0;x-transition:opacity .5s;x-opacity:0;x-object-fit:contain;image-rendering:crisp-edges;image-rendering: pixelated;"></canvas>
 </div>
 <script>
 window.addEventListener('resize', dosize);
@@ -208,12 +208,14 @@ window.requestAnimationFrame(dosize);
             progressElement.value = parseInt(m[2])*100;
             progressElement.max = parseInt(m[4])*100;
             progressElement.hidden = false;
+            progressElement.parentNode.style.display = '';
             if (spinnerElement)
 	            spinnerElement.hidden = false;
           } else {
             progressElement.value = null;
             progressElement.max = null;
             progressElement.hidden = true;
+            progressElement.parentNode.style.display = 'none';
             if (!text && spinnerElement) spinnerElement.style.display = 'none';
           }
           if (statusElement)
