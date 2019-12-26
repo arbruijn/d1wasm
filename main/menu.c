@@ -400,7 +400,7 @@ void do_option ( int select)
 		case MENU_SHOW_CREDITS:
 			gr_palette_fade_out( gr_palette,32,0);
 			credits_show();
-			//do_credits_menu();
+			do_credits_menu();
 			break;
 		case MENU_ORDER_GOG:
 			goto_gog();
